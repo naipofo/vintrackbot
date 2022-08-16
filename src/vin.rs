@@ -11,13 +11,14 @@ pub struct VinRepository {
     client: reqwest::Client,
 }
 impl VinRepository {
-    pub fn new(api_root_url: &str, cookie_value: &str) -> Self {
+    pub fn new(api_root_url: &str, cookie_value: &str, langauge: &str) -> Self {
         VinRepository {
             api_root_url: api_root_url.to_string(),
             client: reqwest::Client::builder()
                 .default_headers({
                     let mut h = HeaderMap::new();
                     h.insert("cookie", HeaderValue::from_str(cookie_value).unwrap());
+                    h.insert("Accept-Language", HeaderValue::from_str(langauge).unwrap());
                     h
                 })
                 .gzip(true)
@@ -56,6 +57,7 @@ impl VinRepository {
             .await
     }
 }
+
 
 pub mod responses {
     use serde::Deserialize;
