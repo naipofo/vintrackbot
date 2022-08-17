@@ -3,10 +3,11 @@ use secrets::get_secrets;
 
 use crate::vin::VinRepository;
 
+mod database;
 mod page_scraper;
+mod searching;
 mod secrets;
 mod vin;
-mod searching;
 
 #[tokio::main]
 async fn main() -> Result<(), ()> {
@@ -15,6 +16,8 @@ async fn main() -> Result<(), ()> {
         .await
         .unwrap();
     let repo = VinRepository::new(&secrets.api_root, &cookie, "pl");
+
+    let mut db = database::VinDatabase::new(DATABASE_URL).await;
 
     Ok(())
 }

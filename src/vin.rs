@@ -1,6 +1,8 @@
 use reqwest::header::{HeaderMap, HeaderValue};
 use serde::de::DeserializeOwned;
 
+use crate::searching::SearchQuery;
+
 use self::responses::{
     data::{ItemDetails, SearchResult},
     VinItemResponse, VinPagedResponse,
@@ -27,17 +29,20 @@ impl VinRepository {
         }
     }
 
-    pub async fn search_by_query_string(
+    pub async fn search_by_query(
         &self,
-        query: &str,
+        query: &SearchQuery,
     ) -> Result<VinPagedResponse<SearchResult>, reqwest::Error> {
-        self.endpoint_request(&format!("/catalog/items?{}", query))
-            .await
+        self.endpoint_request(&format!(
+            "/catalog/items?{}",
+            serde_qs::to_string(&query).unwrap() // TODO: Better error handling
+        ))
+        .await
     }
 
     pub async fn get_item_by_id(
         &self,
-        id: &u64,
+        id: &i64,
     ) -> Result<VinItemResponse<ItemDetails>, reqwest::Error> {
         self.endpoint_request(&format!("/items/{id}/details")).await
     }
@@ -58,7 +63,6 @@ impl VinRepository {
     }
 }
 
-
 pub mod responses {
     use serde::Deserialize;
 
@@ -70,11 +74,11 @@ pub mod responses {
 
     #[derive(Debug, Deserialize)]
     pub struct PaginationData {
-        current_page: u64,
-        total_pages: u64,
-        total_entries: u64,
-        per_page: u64,
-        time: u64,
+        current_page: i64,
+        total_pages: i64,
+        total_entries: i64,
+        per_page: i64,
+        time: i64,
     }
 
     #[derive(Debug, Deserialize)]
@@ -87,7 +91,7 @@ pub mod responses {
 
         #[derive(Debug, Deserialize)]
         pub struct SearchResult {
-            id: u64,
+            id: i64,
             title: String,
             price: String,
             currency: String,
@@ -100,7 +104,7 @@ pub mod responses {
 
         #[derive(Debug, Deserialize)]
         pub struct ItemDetails {
-            id: u64,
+            id: i64,
             title: String,
             description: String,
             currency: String,
@@ -111,7 +115,7 @@ pub mod responses {
 
         #[derive(Debug, Deserialize)]
         pub struct Photo {
-            id: u64,
+            id: i64,
             url: String,
             full_size_url: String,
         }

@@ -8,4 +8,6 @@ reqwest = { version = "0.11", features = ["json", "gzip"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde_qs = "0.10.1"
 toml = "0.5"
+sqlx = { git = "https://github.com/launchbadge/sqlx.git" , features = [ "runtime-tokio-native-tls" , "sqlite" ] }
